@@ -1,4 +1,3 @@
-import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -13,6 +12,14 @@ class Reflection{
     private Field[] fields;
 
     public  Reflection(){
+        myClass = null;
+        myObject = null;
+        constructors = null;
+        methods = null;
+        fields = null;
+
+        //System.out.println("Class path: "+System.getProperty("java.class.path"));
+
         infoClass();
         infoCostruttoreMetodiCampi();
     }
@@ -24,23 +31,24 @@ class Reflection{
             MyClass myObject = new MyClass();
             myClass = myObject.getClass();
             //OPPURE
-            String className = "src/MyClass.java";
-                myClass = Class.forName(className);
+            String className = "MyClass";
+            myClass = Class.forName(className);
             this.myClass = myClass;
             this.myObject = myObject;
         }
         catch (ClassNotFoundException e) {
+                System.out.println("Non trovo il percorso");
                 throw new RuntimeException(e);
         }
     }
 
-    private void infoCostruttoreMetodiCampi(){
+    public void infoCostruttoreMetodiCampi(){
         this.constructors = this.myClass.getConstructors();
         this.methods = this.myClass.getMethods();
         this.fields = this.myClass.getFields();
     }
 
-    private void CreazioneDinamicheInstanze() {
+    public void CreazioneDinamicheInstanze() {
         try {
             Class<?> myClass = MyClass.class;
             Constructor<?> constructor = myClass.getConstructor();
@@ -50,17 +58,17 @@ class Reflection{
         }
     }
 
-    private void AcessoDatiDinamico(){
+    public void AcessoDatiDinamico(){
         try {
             MyClass myObject = new MyClass();
             Class<?> myClass = MyClass.class;
 
-            Field field = myClass.getField("id");
-            field.set(myObject,3);
+            Field field = myClass.getDeclaredField("id");  //getDeclareField, perchè la variabile è provata
+            //field.set(myObject,3); Non si puo' usare con le variabili private
 
-            Method method = myClass.getMethod("print");
-            method.invoke(myObject);
-        } catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            Method method = myClass.getDeclaredMethod("print");
+            //method.invoke(myObject); Non si puo' usare con le variabili private
+        } catch (NoSuchFieldException  | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
     }
